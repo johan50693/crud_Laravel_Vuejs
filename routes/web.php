@@ -12,5 +12,8 @@
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    // return phpinfo();
+    return view('dashboard');
 });
+
+Route::resource('task', 'TaskController',['except'=>'show','created','edit']);

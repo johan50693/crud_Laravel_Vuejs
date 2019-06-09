@@ -1,32 +1,59 @@
-/**
- * First we will load all of this project's JavaScript dependencies which
- * includes Vue and other libraries. It is a great starting point when
- * building robust, powerful web applications using Vue and Laravel.
- */
 
-require('./bootstrap');
-
-window.Vue = require('vue');
-
-/**
- * The following block of code may be used to automatically register your
- * Vue components. It will recursively scan this directory for the Vue
- * components and automatically register them with their "basename".
- *
- * Eg. ./components/ExampleComponent.vue -> <example-component></example-component>
- */
-
-// const files = require.context('./', true, /\.vue$/i);
-// files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default));
-
-Vue.component('example-component', require('./components/ExampleComponent.vue').default);
-
-/**
- * Next, we will create a fresh Vue application instance and attach it to
- * the page. Then, you may begin adding components to this application
- * or customize the JavaScript scaffolding to fit your unique needs.
- */
-
-const app = new Vue({
-    el: '#app',
+new Vue({
+    el:'#crud',
+    created: function () {
+        this.getKeeps();
+    },
+    data:{
+        keeps:[],
+        newKeep: '',
+        errors: [],
+        fillKeep: {'id':'' , 'keep':''}
+    },
+    methods:{
+        getKeeps: function(){
+            var urlKeeps='task';
+            axios.get(urlKeeps).then(response => {
+                this.keeps=response.data;
+            });
+        },
+        editKeep: function (keep){
+            this.fillKeep.id= keep.id;
+            this.fillKeep.keep= keep.keep;
+            $("#edit").modal('show');
+        },
+        updateKeep: function(id){
+            var url= 'task/'+id;
+            axios.put(url, this.fillKeep).then(response =>{
+                this.getKeeps();
+                this.fillKeep={'id':'' , 'keep':''};
+                this.errors=[];
+                $('#edit').modal('hide');
+                toastr.success('Tarea actualizada con exito');
+            }).catch(error => {
+                this.errors= error.response.data;
+            });
+        },
+        deleteKeep: function(keep){
+            var urlKeeps= 'task/'+keep.id;
+            axios.delete(urlKeeps).then(response =>{
+                this.getKeeps();
+                toastr.success('Se ha procesado la eliminación de forma correcta..');
+            });
+        },
+        createKeep: function(){
+            var url= 'task';
+            axios.post(url,{
+                keep: this.newKeep
+            }).then(response =>{
+                this.getKeeps();
+                this.newKeep='';
+                this.errors=[];
+                $('#create').modal('hide');
+                toastr.success('Nueva tarea creada de manera exitosa');
+            }).catch(error => {
+                this.errors= error.response.data;
+            })
+        }
+    }
 });
