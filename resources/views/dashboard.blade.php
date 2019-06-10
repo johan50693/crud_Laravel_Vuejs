@@ -31,6 +31,28 @@
                 </tr>
             </tbody>
         </table>
+
+        <nav aria-label="Page navigation example">
+            <ul class="pagination">
+                <li v-if="pagination.current_page > 1" class="page-item">
+                    <a class="page-link" href="#" @click.prevent="changePage(pagination.current_page-1)" >
+                        Atras
+                    </a>
+                </li>
+
+                <li v-for="page in pagesNumber" v-bind:class="[page == isActive ? 'active' : '']" class="page-item">
+                <a class="page-link" href="#" @click.prevent="changePage(page)">
+                    @{{page}}
+                </a>
+                </li>
+             
+                <li v-if="pagination.current_page < pagination.last_page" class="page-item">
+                    <a class="page-link" href="#" @click.prevent="changePage(pagination.current_page+1)" >
+                        Siguiente
+                    </a>
+                </li>
+            </ul>
+          </nav>
         @include('create')
         @include('edit')
     </div>
